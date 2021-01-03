@@ -1,6 +1,12 @@
 # DWT
 
-Server for distributed delivering combinations of wordlists.
+Server for distributed delivering combinations of wordlists. Main idea:
+
+- Reduce the amount of information transmitted to bruteforcing tools
+- Remove duplications
+- One entry point with wordlists for all teammates
+- Job control
+- Result control
 
 ## Features
 
