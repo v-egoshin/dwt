@@ -1,6 +1,6 @@
 # distributed-word-tool
 
-Server for distributed bruteforce tasks.
+Server for distributed delivering combinations of wordlists.
 
 ## Features
 
