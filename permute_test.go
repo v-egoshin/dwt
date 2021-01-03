@@ -1,4 +1,4 @@
-package distributed_word_tool
+package dwt
 
 import (
 	"os"
@@ -43,9 +43,20 @@ func TestPermuteAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			var wp WordlistPermutations
+
+			fpaths := []string{
+				"../dwt/test/wl1.txt",
+				"../dwt/test/wl2.txt",
+				"../dwt/test/wl3.txt",
+				"../dwt/test/wl4.txt",
+				"../dwt/test/1_000_000.txt",
+			}
+
+			wp.Initialize(fpaths)
 			p := make(chan []int, 0)
 			var result [][]int
-			go PermuteAll(tt.args.parts, p)
+			go wp.PermuteAll(p)
 			for {
 				pair, ok := <-p
 				if !ok {
@@ -74,7 +85,6 @@ func TestPermuteRanges(t *testing.T) {
 		{
 			name: "Get permutes from 0 before 2",
 			args: args{
-				wordlistLines: []int{3, 2, 1},
 				//permutes number	 0        1		  2		   3        4        5
 				//expected: [][]int{{0,0,0}, {0,1,0}, {1,0,0}, {1,1,0}, {2,0,0}, {2,1,0}},
 				expected: [][]int{{0, 0, 0}, {0, 1, 0}},
@@ -85,19 +95,29 @@ func TestPermuteRanges(t *testing.T) {
 		{
 			name: "Get permutes from 10000 before 10005",
 			args: args{
-				wordlistLines: []int{10, 10, 10, 10, 10},
-				from:          1000,
-				before:        1005,
-				expected:      [][]int{{0, 1, 0, 0, 0}, {0, 1, 0, 0, 1}, {0, 1, 0, 0, 2}, {0, 1, 0, 0, 3}, {0, 1, 0, 0, 4}},
+				from:     1000,
+				before:   1005,
+				expected: [][]int{{0, 0, 0, 0, 1000}, {0, 0, 0, 0, 1001}, {0, 0, 0, 0, 1002}, {0, 0, 0, 0, 1003}, {0, 0, 0, 0, 1004}},
 			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			var wp WordlistPermutations
+
+			fpaths := []string{
+				"../dwt/test/wl1.txt",
+				"../dwt/test/wl2.txt",
+				"../dwt/test/wl3.txt",
+				"../dwt/test/wl4.txt",
+				"../dwt/test/1_000_000.txt",
+			}
+
+			wp.Initialize(fpaths)
 			p := make(chan []int, 0)
 			var result [][]int
-			go Permute(tt.args.wordlistLines, p, tt.args.from, tt.args.before)
+			go wp.Permute(p, tt.args.from, tt.args.before)
 			for {
 				pair, ok := <-p
 				if !ok {

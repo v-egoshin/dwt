@@ -1,3 +1,3 @@
-module github.com/v-egoshin/distributed-word-tool
+module github.com/v-egoshin/dwt
 
 go 1.15

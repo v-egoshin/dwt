@@ -3,18 +3,18 @@ package main
 import (
 	"fmt"
 
-	. "github.com/v-egoshin/distributed-word-tool"
+	. "github.com/v-egoshin/dwt"
 )
 
 func main() {
 	var wp WordlistPermutations
 
 	fpaths := []string{
-		"../distributed-word-tool/test/wl1.txt",
-		"../distributed-word-tool/test/wl2.txt",
-		"../distributed-word-tool/test/wl3.txt",
-		"../distributed-word-tool/test/wl4.txt",
-		"../distributed-word-tool/test/1_000_000.txt",
+		"../dwt/test/wl1.txt",
+		"../dwt/test/wl2.txt",
+		"../dwt/test/wl3.txt",
+		"../dwt/test/wl4.txt",
+		"../dwt/test/1_000_000.txt",
 	}
 
 	wp.Initialize(fpaths)

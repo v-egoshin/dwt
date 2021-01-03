@@ -1,4 +1,4 @@
-# distributed-word-tool
+# DWT
 
 Server for distributed delivering combinations of wordlists.
 
@@ -7,7 +7,7 @@ Server for distributed delivering combinations of wordlists.
 - [x] ✅ Get all permutations
 - [x] ✅ Get permutation by number
 - [x] ✅ Get permutation by state
-- [x] ✅ Get permutation by range number
+- [x] ✅ Get permutations by range number
 - [ ] ⏳ Documentation
 - [ ] ⏳ Wordlist server
 - [ ] ⏳ Job server

@@ -1,4 +1,4 @@
-package distributed_word_tool
+package dwt
 
 import (
 	"bufio"
