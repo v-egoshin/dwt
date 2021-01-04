@@ -20,10 +20,10 @@ func main() {
 	wp.Initialize(fpaths)
 	fmt.Println(wp.Count)
 
-	p := make(chan []int, 0)
-	go wp.Permute(p, 129000000, 129000020)
+	receiver := make(chan []int, 0)
+	go wp.Permute(receiver, 129000000, 129000020)
 	for {
-		_, ok := <-p
+		_, ok := <-receiver
 		if !ok {
 			break
 		}
