@@ -2,11 +2,21 @@ package main
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/gin-gonic/gin"
 	. "github.com/v-egoshin/dwt"
+	"github.com/v-egoshin/dwt/server"
 )
 
 func main() {
+	r := gin.New()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+	rg := r.RouterGroup
+	r.RouterGroup = *server.InitializeRoutes(&rg)
+	r.Run(":8080")
+	os.Exit(0)
 	var wp WordlistPermutations
 
 	fpaths := []string{
