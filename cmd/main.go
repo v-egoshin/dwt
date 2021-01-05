@@ -2,11 +2,21 @@ package main
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/gin-gonic/gin"
 	. "github.com/v-egoshin/dwt"
+	"github.com/v-egoshin/dwt/server"
 )
 
 func main() {
+	r := gin.New()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+	rg := r.RouterGroup
+	r.RouterGroup = *server.InitializeRoutes(&rg)
+	r.Run(":8080")
+	os.Exit(0)
 	var wp WordlistPermutations
 
 	fpaths := []string{
@@ -20,10 +30,10 @@ func main() {
 	wp.Initialize(fpaths)
 	fmt.Println(wp.Count)
 
-	p := make(chan []int, 0)
-	go wp.Permute(p, 129000000, 129000020)
+	receiver := make(chan []int, 0)
+	go wp.Permute(receiver, 129000000, 129000020)
 	for {
-		_, ok := <-p
+		_, ok := <-receiver
 		if !ok {
 			break
 		}
