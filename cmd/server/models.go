@@ -18,7 +18,8 @@ type Configuration struct {
 
 type Authenticate struct {
 	gorm.Model
-	Token string // path to wordlists folder
+	Access int    // access level: read, write
+	Token  string // for manipulate wordlists and access to jobs
 }
 
 type Job struct {
