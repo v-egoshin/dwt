@@ -13,3 +13,7 @@ func initializeRoutes() {
 	router.GET("/wordlist", showWordlist)
 	router.GET("/wordlist/reindex", reindexWordlist)
 }
+
+func showRunningJobs(context *gin.Context) {
+
+}
