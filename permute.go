@@ -7,8 +7,9 @@ import (
 )
 
 type File struct {
-	Path  string
-	Lines int
+	Path    string
+	Lines   int
+	Indexes map[uint32]uint32 //TODO: collect offset each 1000 line for quick search
 }
 
 type WordlistFiles []File
