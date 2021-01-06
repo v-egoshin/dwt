@@ -1,6 +1,8 @@
 package dwt
 
 import (
+	"bufio"
+	"fmt"
 	"os"
 	"path"
 	"reflect"
@@ -143,7 +145,8 @@ func TestCountLinesInFile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CountLinesInFile(tt.args.fileName); got != tt.want {
+			count, _ := CountLinesInFile(tt.args.fileName)
+			if got := count; got != tt.want {
 				_, filename, _, _ := runtime.Caller(0)
 				// The ".." may change depending on you folder structure
 				dir := path.Join(path.Dir(filename), "..")
@@ -194,6 +197,60 @@ func TestGetLine(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetLine() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func CountLinesInFile2(fileName string) (uint32, map[uint32]uint32) {
+	f, err := os.Open(fileName)
+	defer f.Close()
+
+	if err != nil {
+		panic(fmt.Sprintf("File not found: %s", fileName))
+	}
+	scanner := bufio.NewScanner(f)
+
+	index := make(map[uint32]uint32, 1)
+	scanner.Split(bufio.ScanLines)
+
+	var count, offset, offsetThousand uint32
+	count = 0
+	offset = 0
+	offsetThousand = 1
+	for scanner.Scan() {
+		offset += uint32(len(scanner.Text()) + 1)
+		if count%1000 == 0 {
+			index[offsetThousand] = offset
+			offsetThousand += 1
+		}
+		count++
+	}
+	return count, index
+}
+
+func TestCountLinesInFileWithIndex(t *testing.T) {
+	type args struct {
+		fileName string
+	}
+	tests := []struct {
+		name  string
+		args  args
+		count uint32
+		index uint32
+	}{
+		{
+			name:  "File with one million lines",
+			args:  args{fileName: "./test/1_000_000.txt"},
+			count: 1000000,
+			index: 65531,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			count, index := CountLinesInFile2(tt.args.fileName)
+			if count != tt.count && index[10] != tt.index {
+				t.Errorf("CountLinesInFile() = %v, want %v", index[10], tt.index)
 			}
 		})
 	}

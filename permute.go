@@ -8,8 +8,7 @@ import (
 
 type File struct {
 	Lines   uint32
-	Indexes map[uint32]uint32 //TODO: collect offset each 1000 line for quick search
-	Handler *File
+	Indexes map[uint32]uint32
 	Path    string
 }
 
@@ -23,7 +22,8 @@ type WordlistPermutations struct {
 
 func (wlp *WordlistPermutations) Initialize(wordlistPaths []string) {
 	for _, w := range wordlistPaths {
-		wl := File{Path: w, Lines: CountLinesInFile(w)}
+		lines, index := CountLinesInFile(w)
+		wl := File{Path: w, Lines: lines, Indexes: index}
 		wlp.WordlistFiles = append(wlp.WordlistFiles, wl)
 	}
 	var perms uint32
@@ -139,22 +139,32 @@ func (f WordlistFiles) getPermuteByState(pair []uint32) []string {
 	return stringPair
 }
 
-func CountLinesInFile(fileName string) uint32 {
+// perl -pi -e 's/\r\n/\n/'
+func CountLinesInFile(fileName string) (uint32, map[uint32]uint32) {
 	f, err := os.Open(fileName)
+
 	if err != nil {
 		panic(fmt.Sprintf("File not found: %s", fileName))
 	}
+	defer f.Close()
 	scanner := bufio.NewScanner(f)
 
+	index := make(map[uint32]uint32, 1)
 	scanner.Split(bufio.ScanLines)
 
-	var count uint32
+	var count, offset, offsetThousand uint32
 	count = 0
+	offset = 0
+	offsetThousand = 1
 	for scanner.Scan() {
+		offset += uint32(len(scanner.Text()) + 1)
+		if count%1000 == 0 {
+			index[offsetThousand] = offset
+			offsetThousand += 1
+		}
 		count++
 	}
-
-	return count
+	return count, index
 }
 func GetLine(wordlist File, from uint32, before uint32) ([]string, error) {
 	var lines []string
