@@ -34,6 +34,7 @@ func (wlp *WordlistPermutations) Initialize(wordlistPaths []string) {
 	wlp.Count = perms
 	wlp.endState = wlp.WordlistFiles.getPermutesEndState()
 }
+
 func (wlp WordlistPermutations) GetPermuteByState(pair []uint32) ([]string, error) {
 	// Very quick!
 	for i := 0; i < len(pair); i++ {
@@ -43,6 +44,7 @@ func (wlp WordlistPermutations) GetPermuteByState(pair []uint32) ([]string, erro
 	}
 	return wlp.WordlistFiles.getPermuteByState(pair), nil
 }
+
 func (wlp WordlistPermutations) GetPermuteByNumber(number uint32) ([]string, error) {
 	// Danger: Don't use it. Very slow!
 	if wlp.Count-1 < number {
@@ -56,9 +58,11 @@ func (wlp WordlistPermutations) GetPermuteByNumber(number uint32) ([]string, err
 	}
 	return value, nil
 }
+
 func (wlp WordlistPermutations) PermuteAll(linePair chan []uint32) {
 	wlp.Permute(linePair, 0, 0)
 }
+
 func (wlp WordlistPermutations) Permute(linePair chan []uint32, from uint32, before uint32) {
 	{
 		var numberPermutations uint32
@@ -109,6 +113,7 @@ func (wlp WordlistPermutations) Permute(linePair chan []uint32, from uint32, bef
 	}
 	close(linePair)
 }
+
 func (wlp WordlistPermutations) EndState() []uint32 {
 	var state []uint32
 	for i := 0; i < len(wlp.endState); i++ {
@@ -124,6 +129,7 @@ func (f WordlistFiles) getPermutesEndState() []uint32 {
 	}
 	return wlines
 }
+
 func (f WordlistFiles) getPermuteByState(pair []uint32) []string {
 	var stringPair []string
 	for i, file := range f {
@@ -166,6 +172,7 @@ func CountLinesInFile(fileName string) (uint32, map[uint32]uint32) {
 	}
 	return count, index
 }
+
 func GetLine(wordlist File, from uint32, before uint32) ([]string, error) {
 	var lines []string
 	if before > wordlist.Lines {
