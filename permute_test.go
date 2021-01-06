@@ -10,34 +10,18 @@ import (
 
 func TestPermuteAll(t *testing.T) {
 	type args struct {
-		parts    []int
-		pair     chan []int
-		expected [][]int
+		pair     chan []uint32
+		expected [][]uint32
 	}
 	tests := []struct {
 		name string
 		args args
 	}{
 		{
-			name: "Get all permutes for 2 files with two lines",
+			name: "Get all permutes",
 			args: args{
-				parts:    []int{2, 2},
 				pair:     nil,
-				expected: [][]int{{0, 0}, {0, 1}, {1, 0}, {1, 1}},
-			},
-		}, {
-			name: "Get all permutes for 1 file with 3 lines",
-			args: args{
-				parts:    []int{3},
-				pair:     nil,
-				expected: [][]int{{0}, {1}, {2}},
-			},
-		}, {
-			name: "Get all permutes for 3 files",
-			args: args{
-				parts:    []int{3, 2, 1},
-				pair:     nil,
-				expected: [][]int{{0, 0, 0}, {0, 1, 0}, {1, 0, 0}, {1, 1, 0}, {2, 0, 0}, {2, 1, 0}},
+				expected: [][]uint32{{0, 0, 0}, {0, 0, 1}, {0, 0, 2}, {0, 0, 3}, {0, 1, 0}, {0, 1, 1}, {0, 1, 2}, {0, 1, 3}, {0, 2, 0}, {0, 2, 1}, {0, 2, 2}, {0, 2, 3}, {0, 3, 0}, {0, 3, 1}, {0, 3, 2}, {0, 3, 3}, {1, 0, 0}, {1, 0, 1}, {1, 0, 2}, {1, 0, 3}, {1, 1, 0}, {1, 1, 1}, {1, 1, 2}, {1, 1, 3}, {1, 2, 0}, {1, 2, 1}, {1, 2, 2}, {1, 2, 3}, {1, 3, 0}, {1, 3, 1}, {1, 3, 2}, {1, 3, 3}},
 			},
 		},
 	}
@@ -109,10 +93,10 @@ func TestPermuteRanges(t *testing.T) {
 			var wp WordlistPermutations
 
 			fpaths := []string{
-				"../dwt/test/wl1.txt",
-				"../dwt/test/wl2.txt",
-				"../dwt/test/wl3.txt",
-				"../dwt/test/wl4.txt",
+				"./dwt/test/wl1.txt",
+				"./dwt/test/wl2.txt",
+				"./dwt/test/wl3.txt",
+				"./dwt/test/wl4.txt",
 			}
 
 			wp.Initialize(fpaths)
@@ -145,16 +129,16 @@ func TestCountLinesInFile(t *testing.T) {
 		{
 			name: "Count lines in file test/wl1.txt",
 			args: args{
-				"test/wl1.txt",
+				"./dwt/test/wl1.txt",
 			},
 			want: 2,
 		},
 		{
 			name: "Count lines in file test/wl4.txt",
 			args: args{
-				"test/wl4.txt",
+				"./dwt/test/wl4.txt",
 			},
-			want: 4,
+			want: 8,
 		},
 	}
 	for _, tt := range tests {
