@@ -1,4 +1,4 @@
-# DWT [![Build Status](https://travis-ci.org/v-egoshin/dwt.svg?branch=main)](https://travis-ci.org/v-egoshin/dwt)
+# DWT [![Test Status](https://travis-ci.org/v-egoshin/dwt.svg?branch=main)](https://travis-ci.org/v-egoshin/dwt)
 
 Server for distributed delivering combinations of wordlists. 
 
