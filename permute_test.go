@@ -46,16 +46,18 @@ func TestPermuteAll(t *testing.T) {
 			var wp WordlistPermutations
 
 			fpaths := []string{
-				"../dwt/test/wl1.txt",
-				"../dwt/test/wl2.txt",
-				"../dwt/test/wl3.txt",
-				"../dwt/test/wl4.txt",
-				"../dwt/test/1_000_000.txt",
+				"./dwt/test/wl1.txt",
+				"./dwt/test/wl2.txt",
+				"./dwt/test/wl3.txt",
 			}
+			_, filename, _, _ := runtime.Caller(0)
+			// The ".." may change depending on you folder structure
+			dir := path.Join(path.Dir(filename), "..")
+			_ = os.Chdir(dir)
 
 			wp.Initialize(fpaths)
-			p := make(chan []int, 0)
-			var result [][]int
+			p := make(chan []uint32, 0)
+			var result [][]uint32
 			go wp.PermuteAll(p)
 			for {
 				pair, ok := <-p
@@ -73,10 +75,10 @@ func TestPermuteAll(t *testing.T) {
 
 func TestPermuteRanges(t *testing.T) {
 	type args struct {
-		wordlistLines []int
-		expected      [][]int
-		from          int
-		before        int
+		wordlistLines []uint32
+		expected      [][]uint32
+		from          uint32
+		before        uint32
 	}
 	tests := []struct {
 		name string
@@ -87,7 +89,7 @@ func TestPermuteRanges(t *testing.T) {
 			args: args{
 				//permutes number	 0        1		  2		   3        4        5
 				//expected: [][]int{{0,0,0}, {0,1,0}, {1,0,0}, {1,1,0}, {2,0,0}, {2,1,0}},
-				expected: [][]int{{0, 0, 0}, {0, 1, 0}},
+				expected: [][]uint32{{0, 0, 0}, {0, 1, 0}},
 				from:     0,
 				before:   2,
 			},
@@ -97,7 +99,7 @@ func TestPermuteRanges(t *testing.T) {
 			args: args{
 				from:     1000,
 				before:   1005,
-				expected: [][]int{{0, 0, 0, 0, 1000}, {0, 0, 0, 0, 1001}, {0, 0, 0, 0, 1002}, {0, 0, 0, 0, 1003}, {0, 0, 0, 0, 1004}},
+				expected: [][]uint32{{0, 0, 0, 0, 1000}, {0, 0, 0, 0, 1001}, {0, 0, 0, 0, 1002}, {0, 0, 0, 0, 1003}, {0, 0, 0, 0, 1004}},
 			},
 		},
 	}
@@ -111,12 +113,11 @@ func TestPermuteRanges(t *testing.T) {
 				"../dwt/test/wl2.txt",
 				"../dwt/test/wl3.txt",
 				"../dwt/test/wl4.txt",
-				"../dwt/test/1_000_000.txt",
 			}
 
 			wp.Initialize(fpaths)
-			p := make(chan []int, 0)
-			var result [][]int
+			p := make(chan []uint32, 0)
+			var result [][]uint32
 			go wp.Permute(p, tt.args.from, tt.args.before)
 			for {
 				pair, ok := <-p
@@ -139,7 +140,7 @@ func TestCountLinesInFile(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want int
+		want uint32
 	}{
 		{
 			name: "Count lines in file test/wl1.txt",
@@ -172,8 +173,8 @@ func TestCountLinesInFile(t *testing.T) {
 func TestGetLine(t *testing.T) {
 	type args struct {
 		wordlist File
-		from     int
-		before   int
+		from     uint32
+		before   uint32
 	}
 	tests := []struct {
 		name    string

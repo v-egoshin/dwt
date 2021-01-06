@@ -7,17 +7,18 @@ import (
 )
 
 type File struct {
-	Path    string
-	Lines   int
+	Lines   uint32
 	Indexes map[uint32]uint32 //TODO: collect offset each 1000 line for quick search
+	Handler *File
+	Path    string
 }
 
 type WordlistFiles []File
 
 type WordlistPermutations struct {
 	WordlistFiles WordlistFiles
-	Count         int
-	endState      []int
+	Count         uint32
+	endState      []uint32
 }
 
 func (wlp *WordlistPermutations) Initialize(wordlistPaths []string) {
@@ -25,15 +26,15 @@ func (wlp *WordlistPermutations) Initialize(wordlistPaths []string) {
 		wl := File{Path: w, Lines: CountLinesInFile(w)}
 		wlp.WordlistFiles = append(wlp.WordlistFiles, wl)
 	}
-
-	perms := 1
+	var perms uint32
+	perms = 1
 	for _, w := range wlp.WordlistFiles {
 		perms = perms * w.Lines
 	}
 	wlp.Count = perms
 	wlp.endState = wlp.WordlistFiles.getPermutesEndState()
 }
-func (wlp WordlistPermutations) GetPermuteByState(pair []int) ([]string, error) {
+func (wlp WordlistPermutations) GetPermuteByState(pair []uint32) ([]string, error) {
 	// Very quick!
 	for i := 0; i < len(pair); i++ {
 		if pair[i] > wlp.endState[i]-1 {
@@ -42,12 +43,12 @@ func (wlp WordlistPermutations) GetPermuteByState(pair []int) ([]string, error) 
 	}
 	return wlp.WordlistFiles.getPermuteByState(pair), nil
 }
-func (wlp WordlistPermutations) GetPermuteByNumber(number int) ([]string, error) {
+func (wlp WordlistPermutations) GetPermuteByNumber(number uint32) ([]string, error) {
 	// Danger: Don't use it. Very slow!
 	if wlp.Count-1 < number {
 		return nil, fmt.Errorf("Number of permutations is %d from 0 to %d. You want to get: %d", wlp.Count, wlp.Count-1, number)
 	}
-	p := make(chan []int, 0)
+	p := make(chan []uint32, 0)
 	go wlp.Permute(p, number, number+1)
 	value, err := wlp.GetPermuteByState(<-p)
 	if err != nil {
@@ -55,18 +56,20 @@ func (wlp WordlistPermutations) GetPermuteByNumber(number int) ([]string, error)
 	}
 	return value, nil
 }
-func (wlp WordlistPermutations) PermuteAll(linePair chan []int) {
+func (wlp WordlistPermutations) PermuteAll(linePair chan []uint32) {
 	wlp.Permute(linePair, 0, 0)
 }
-func (wlp WordlistPermutations) Permute(linePair chan []int, from int, before int) {
+func (wlp WordlistPermutations) Permute(linePair chan []uint32, from uint32, before uint32) {
 	{
-		var numberPermutations = 1
+		var numberPermutations uint32
+		numberPermutations = 1
 		for _, countLines := range wlp.endState {
 			numberPermutations *= countLines
 		}
 	}
-	var positionCounter = make([]int, len(wlp.endState))
-	permuteNumber := 0
+	var positionCounter = make([]uint32, len(wlp.endState))
+	var permuteNumber uint32
+	permuteNumber = 0
 	{
 	loop:
 		for {
@@ -80,7 +83,7 @@ func (wlp WordlistPermutations) Permute(linePair chan []int, from int, before in
 				}
 			}
 
-			var permute []int
+			var permute []uint32
 			for index, countLines := range wlp.endState {
 				var position = positionCounter[index]
 				if position >= 0 && position < countLines {
@@ -106,22 +109,22 @@ func (wlp WordlistPermutations) Permute(linePair chan []int, from int, before in
 	}
 	close(linePair)
 }
-func (wlp WordlistPermutations) EndState() []int {
-	var state []int
+func (wlp WordlistPermutations) EndState() []uint32 {
+	var state []uint32
 	for i := 0; i < len(wlp.endState); i++ {
 		state = append(state, wlp.endState[i]-1)
 	}
 	return state
 }
 
-func (f WordlistFiles) getPermutesEndState() []int {
-	var wlines []int
+func (f WordlistFiles) getPermutesEndState() []uint32 {
+	var wlines []uint32
 	for _, wf := range f {
 		wlines = append(wlines, wf.Lines)
 	}
 	return wlines
 }
-func (f WordlistFiles) getPermuteByState(pair []int) []string {
+func (f WordlistFiles) getPermuteByState(pair []uint32) []string {
 	var stringPair []string
 	for i, file := range f {
 		lines, err := GetLine(file, pair[i], pair[i]+1)
@@ -136,7 +139,7 @@ func (f WordlistFiles) getPermuteByState(pair []int) []string {
 	return stringPair
 }
 
-func CountLinesInFile(fileName string) int {
+func CountLinesInFile(fileName string) uint32 {
 	f, err := os.Open(fileName)
 	if err != nil {
 		panic(fmt.Sprintf("File not found: %s", fileName))
@@ -145,14 +148,15 @@ func CountLinesInFile(fileName string) int {
 
 	scanner.Split(bufio.ScanLines)
 
-	count := 0
+	var count uint32
+	count = 0
 	for scanner.Scan() {
 		count++
 	}
 
 	return count
 }
-func GetLine(wordlist File, from int, before int) ([]string, error) {
+func GetLine(wordlist File, from uint32, before uint32) ([]string, error) {
 	var lines []string
 	if before > wordlist.Lines {
 		return nil, fmt.Errorf("File %s have %d lines. Requested: %d", wordlist.Path, wordlist.Lines, before)
@@ -165,7 +169,8 @@ func GetLine(wordlist File, from int, before int) ([]string, error) {
 
 	scanner.Split(bufio.ScanLines)
 
-	count := 0
+	var count uint32
+	count = 0
 	for scanner.Scan() {
 
 		if count >= from && count < before {
