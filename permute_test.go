@@ -89,7 +89,7 @@ func TestPermuteRanges(t *testing.T) {
 			args: args{
 				//permutes number	 0        1		  2		   3        4        5
 				//expected: [][]int{{0,0,0}, {0,1,0}, {1,0,0}, {1,1,0}, {2,0,0}, {2,1,0}},
-				expected: [][]uint32{{0, 0, 0}, {0, 1, 0}},
+				expected: [][]uint32{{0, 0, 0, 0}, {0, 0, 0, 1}},
 				from:     0,
 				before:   2,
 			},
@@ -97,9 +97,9 @@ func TestPermuteRanges(t *testing.T) {
 		{
 			name: "Get permutes from 10000 before 10005",
 			args: args{
-				from:     1000,
-				before:   1005,
-				expected: [][]uint32{{0, 0, 0, 0, 1000}, {0, 0, 0, 0, 1001}, {0, 0, 0, 0, 1002}, {0, 0, 0, 0, 1003}, {0, 0, 0, 0, 1004}},
+				from:     10,
+				before:   15,
+				expected: [][]uint32{{0, 0, 1, 2}, {0, 0, 1, 3}, {0, 0, 1, 4}, {0, 0, 1, 5}, {0, 0, 1, 6}},
 			},
 		},
 	}
