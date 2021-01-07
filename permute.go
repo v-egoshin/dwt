@@ -13,7 +13,7 @@ type File struct {
 	Path    string
 }
 
-type WordlistFiles []File
+type WordlistFiles []*File
 
 type WordlistPermutations struct {
 	WordlistFiles WordlistFiles
@@ -21,7 +21,7 @@ type WordlistPermutations struct {
 	endState      []uint32
 }
 
-func (wlp *WordlistPermutations) Initialize(wordlists []File) {
+func (wlp *WordlistPermutations) Initialize(wordlists []*File) {
 	wlp.WordlistFiles = wordlists
 	var perms uint32
 	perms = 1
@@ -130,7 +130,7 @@ func (f WordlistFiles) getPermutesEndState() []uint32 {
 func (f WordlistFiles) getPermuteByState(pair []uint32) []string {
 	var stringPair []string
 	for i, file := range f {
-		lines, err := GetLine(file, pair[i], pair[i]+1)
+		lines, err := GetLine(*file, pair[i], pair[i]+1)
 		if err != nil {
 			panic(err)
 		}

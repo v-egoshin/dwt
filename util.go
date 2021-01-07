@@ -20,7 +20,7 @@ func ListWordlists(path string) []*File {
 			}
 			if !info.IsDir() {
 				list = append(list, path)
-				fmt.Printf("[+] Found: Wordlist: %s  (%d bytes)\n", path, info.Size())
+				// fmt.Printf("[+] Found: Wordlist: %s  (%d bytes)\n", path, info.Size())
 			}
 			return nil
 		})

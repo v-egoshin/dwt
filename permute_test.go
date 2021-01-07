@@ -31,17 +31,12 @@ func TestPermuteAll(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var wp WordlistPermutations
 
-			fpaths := []string{
-				"./dwt/test/wl1.txt",
-				"./dwt/test/wl2.txt",
-				"./dwt/test/wl3.txt",
-			}
 			_, filename, _, _ := runtime.Caller(0)
 			// The ".." may change depending on you folder structure
 			dir := path.Join(path.Dir(filename), "..")
 			_ = os.Chdir(dir)
-
-			wp.Initialize(fpaths)
+			wl := ListWordlists("./test")
+			wp.Initialize(wl)
 			p := make(chan []uint32, 0)
 			var result [][]uint32
 			go wp.PermuteAll(p)
@@ -75,7 +70,7 @@ func TestPermuteRanges(t *testing.T) {
 			args: args{
 				//permutes number	 0        1		  2		   3        4        5
 				//expected: [][]int{{0,0,0}, {0,1,0}, {1,0,0}, {1,1,0}, {2,0,0}, {2,1,0}},
-				expected: [][]uint32{{0, 0, 0, 0}, {0, 0, 0, 1}},
+				expected: [][]uint32{{0, 0, 0, 0, 0}, {0, 0, 0, 0, 1}},
 				from:     0,
 				before:   2,
 			},
@@ -85,7 +80,7 @@ func TestPermuteRanges(t *testing.T) {
 			args: args{
 				from:     10,
 				before:   15,
-				expected: [][]uint32{{0, 0, 1, 2}, {0, 0, 1, 3}, {0, 0, 1, 4}, {0, 0, 1, 5}, {0, 0, 1, 6}},
+				expected: [][]uint32{{0, 0, 0, 1, 2}, {0, 0, 0, 1, 3}, {0, 0, 0, 1, 4}, {0, 0, 0, 1, 5}, {0, 0, 0, 1, 6}},
 			},
 		},
 	}
@@ -93,15 +88,8 @@ func TestPermuteRanges(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var wp WordlistPermutations
-
-			fpaths := []string{
-				"./dwt/test/wl1.txt",
-				"./dwt/test/wl2.txt",
-				"./dwt/test/wl3.txt",
-				"./dwt/test/wl4.txt",
-			}
-
-			wp.Initialize(fpaths)
+			wl := ListWordlists("./test")
+			wp.Initialize(wl)
 			p := make(chan []uint32, 0)
 			var result [][]uint32
 			go wp.Permute(p, tt.args.from, tt.args.before)
