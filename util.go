@@ -35,7 +35,7 @@ func ListWordlists(path string) []*File {
 	var lf []*File
 	for _, w := range list {
 		lines, index := CountLinesInFile(w)
-		wl := &File{Path: w, Lines: lines, Indexes: index}
+		wl := &File{Path: w, Lines: lines, indexes: index}
 		lf = append(lf, wl)
 	}
 

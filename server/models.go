@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/satori/go.uuid"
+	"github.com/v-egoshin/dwt"
 	"gorm.io/gorm"
 )
 
@@ -16,10 +17,24 @@ type Configuration struct {
 	Auth string
 }
 
+type Role int
+
+const (
+	Read Role = iota
+	Write
+)
+
 type Authenticate struct {
 	gorm.Model
-	Access int    // access level: read, write
-	Token  string // for manipulate wordlists and access to jobs
+	Access Role      // access level: read, write
+	Token  uuid.UUID // for manipulate wordlists and access to jobs
+}
+
+func NewAuthenticate() *Authenticate {
+	return &Authenticate{
+		Access: Read,
+		Token:  uuid.NewV4(),
+	}
 }
 
 type Job struct {
@@ -30,5 +45,19 @@ type Job struct {
 	Done        bool
 	Start       time.Time
 	End         time.Time
-	Authenticate
+	Permutate   *dwt.WordlistPermutations
+	*Authenticate
+}
+
+func NewJob(wlp *dwt.WordlistPermutations) *Job {
+	return &Job{
+		ID:           uuid.NewV4(),
+		Description:  "",
+		Position:     0,
+		Done:         false,
+		Start:        time.Now(),
+		End:          time.Time{},
+		Permutate:    wlp,
+		Authenticate: NewAuthenticate(),
+	}
 }

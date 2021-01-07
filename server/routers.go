@@ -74,12 +74,12 @@ func showJobById(context *gin.Context) {
 	context.String(http.StatusOK, "Hello %s", name)
 }
 
-type NewJob struct {
+type NewJsonJob struct {
 	WordlistIds []int `json:"ids"`
 }
 
 func createNewJob(context *gin.Context) {
-	job := new(NewJob)
+	job := new(NewJsonJob)
 	if err := context.BindJSON(&job); err != nil {
 		fmt.Println(err)
 		context.AbortWithStatus(400)
@@ -89,8 +89,15 @@ func createNewJob(context *gin.Context) {
 	lenWordlists := len(Wordlists)
 
 	var ws []*dwt.File
-	for _, w := range job.WordlistIds {
 
+	if len(job.WordlistIds) == 0 {
+		context.JSON(400, gin.H{
+			"status": "Error",
+			"error":  fmt.Sprintf("Wordlists have no ids"),
+		})
+	}
+
+	for _, w := range job.WordlistIds {
 		if w > lenWordlists-1 {
 
 			context.JSON(400, gin.H{
@@ -101,13 +108,23 @@ func createNewJob(context *gin.Context) {
 		}
 		ws = append(ws, Wordlists[w])
 	}
+
+	wlp := new(dwt.WordlistPermutations)
+	wlp.Initialize(ws)
+	newJob := NewJob(wlp)
+	Jobs = append(Jobs, newJob)
+
 	context.JSON(200, gin.H{
 		"status": "OK",
 		"code":   200,
-		"data":   ws,
+		"id":     newJob.ID,
 	})
 }
 
 func showRunningJobs(context *gin.Context) {
-	context.String(http.StatusOK, "ohai")
+	context.JSON(200, gin.H{
+		"status": "OK",
+		"code":   200,
+		"jobs":   Jobs,
+	})
 }

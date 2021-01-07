@@ -9,7 +9,7 @@ import (
 //TODO: Add index cache to GetLine
 type File struct {
 	Lines   uint32
-	Indexes map[uint32]uint32
+	indexes map[uint32]uint32
 	Path    string
 }
 
@@ -22,6 +22,7 @@ type WordlistPermutations struct {
 }
 
 func (wlp *WordlistPermutations) Initialize(wordlists []*File) {
+	wlp.WordlistFiles = make(WordlistFiles, 0)
 	wlp.WordlistFiles = wordlists
 	var perms uint32
 	perms = 1
