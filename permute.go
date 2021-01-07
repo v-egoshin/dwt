@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+//TODO: Add index cache to GetLine
 type File struct {
 	Lines   uint32
 	Indexes map[uint32]uint32
@@ -20,12 +21,8 @@ type WordlistPermutations struct {
 	endState      []uint32
 }
 
-func (wlp *WordlistPermutations) Initialize(wordlistPaths []string) {
-	for _, w := range wordlistPaths {
-		lines, index := CountLinesInFile(w)
-		wl := File{Path: w, Lines: lines, Indexes: index}
-		wlp.WordlistFiles = append(wlp.WordlistFiles, wl)
-	}
+func (wlp *WordlistPermutations) Initialize(wordlists []File) {
+	wlp.WordlistFiles = wordlists
 	var perms uint32
 	perms = 1
 	for _, w := range wlp.WordlistFiles {
@@ -169,6 +166,9 @@ func CountLinesInFile(fileName string) (uint32, map[uint32]uint32) {
 			offsetThousand += 1
 		}
 		count++
+	}
+	if len(index) == 1 {
+		index = nil
 	}
 	return count, index
 }
