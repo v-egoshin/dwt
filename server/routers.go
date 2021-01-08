@@ -2,9 +2,9 @@ package server
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
+	uuid "github.com/satori/go.uuid"
 	"github.com/v-egoshin/dwt"
 )
 
@@ -17,6 +17,7 @@ func InitializeRoutes(g *gin.RouterGroup) *gin.RouterGroup {
 		{
 			jobs.GET("/", showRunningJobs)
 			jobs.GET("/:job_id", showJobById)
+			jobs.GET("/:job_id/get/:number", showJobById)
 			jobs.POST("/create", createNewJob)
 		}
 		wordlists := v1.Group("/wordlist")
@@ -70,8 +71,24 @@ func getJobChunk(context *gin.Context) {
 }
 
 func showJobById(context *gin.Context) {
-	name := context.Param("job_id")
-	context.String(http.StatusOK, "Hello %s", name)
+	id := context.Param("job_id")
+	uid, err := uuid.FromString(id)
+	if err != nil {
+		context.JSON(404, gin.H{
+			"status": "Error",
+			"error":  fmt.Sprintf("Job %s not found", id),
+		})
+	}
+
+	for _, j := range Jobs {
+		if j.ID == uid {
+			context.JSON(200, gin.H{
+				"status": "Ok",
+				"data":   j,
+			})
+		}
+	}
+
 }
 
 type NewJsonJob struct {
