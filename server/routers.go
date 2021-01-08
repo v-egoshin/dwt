@@ -17,7 +17,7 @@ func InitializeRoutes(g *gin.RouterGroup) *gin.RouterGroup {
 		{
 			jobs.GET("/", showRunningJobs)
 			jobs.GET("/:job_id", showJobById)
-			jobs.GET("/:job_id/get/:number", showJobById)
+			jobs.GET("/:job_id/get/:number", getJobRange)
 			jobs.POST("/create", createNewJob)
 		}
 		wordlists := v1.Group("/wordlist")
@@ -34,6 +34,10 @@ func InitializeRoutes(g *gin.RouterGroup) *gin.RouterGroup {
 	//
 	//Router.GET("/wordlist", showWordlist)
 	//Router.GET("/wordlist/reindex", reindexWordlist)
+}
+
+func getJobRange(context *gin.Context) {
+	//TODO: permutes
 }
 
 func reindexWordlist(context *gin.Context) {
