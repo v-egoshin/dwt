@@ -57,11 +57,11 @@ func (wlp WordlistPermutations) GetPermuteByNumber(number uint32) ([]string, err
 	return value, nil
 }
 
-func (wlp WordlistPermutations) PermuteAll(linePair chan []uint32) {
+func (wlp *WordlistPermutations) PermuteAll(linePair chan []uint32) {
 	wlp.Permute(linePair, 0, 0)
 }
 
-func (wlp WordlistPermutations) Permute(linePair chan []uint32, from uint32, before uint32) {
+func (wlp *WordlistPermutations) Permute(linePair chan []uint32, from uint32, before uint32) {
 	{
 		var numberPermutations uint32
 		numberPermutations = 1
