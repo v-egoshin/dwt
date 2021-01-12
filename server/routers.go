@@ -26,19 +26,17 @@ func InitializeRoutes(g *gin.RouterGroup) *gin.RouterGroup {
 			wordlists.GET("/", showWordlist)
 			wordlists.GET("/reindex", reindexWordlist)
 		}
+
+		client := v1.Group("/register")
+		{
+			client.POST("/seat", setSeat) // register client seat for jobs
+		}
 	}
 	return v1
-	//Router.
-	//Router.POST("/job/create", createNewJob)
-	//Router.GET("/job/:job_id", showJobById)
-	//Router.GET("/job/:job_id/chunk", getJobChunk)
-	//
-	//Router.GET("/wordlist", showWordlist)
-	//Router.GET("/wordlist/reindex", reindexWordlist)
 }
 
-func getJobRange(context *gin.Context) {
-	//TODO: permutes
+func setSeat(context *gin.Context) {
+	// register
 }
 
 func reindexWordlist(context *gin.Context) {

@@ -15,12 +15,8 @@ func Run() {
 	flag.Parse()
 	//flagWordlistPath := flag.String("path", "./wordlists", "Path to wordlists.")
 	Wordlists = dwt.ListWordlists(flagWordlistPath)
-
-	//
-	//var wlp dwt.WordlistPermutations
-	//wlp.Initialize(server.Wordlists[0:3])
-	//fmt.Println(wlp.EndState())
-
+	// TODO: Add certificate auth
+	// TODO: Add public folder for publishing generated agents
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
