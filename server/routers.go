@@ -14,32 +14,46 @@ import (
 func InitializeRoutes(g *gin.RouterGroup) *gin.RouterGroup {
 	v1 := g.Group("/")
 	{
-		jobs := v1.Group("/job")
+		manage := v1.Group("/manage")
 		{
-			jobs.GET("/", showRunningJobs)
-			jobs.GET("/:job_id", showJobById)
-			jobs.GET("/:job_id/get/:number", getJobChunk)
-			jobs.POST("/create", createNewJob)
-		}
-		wordlists := v1.Group("/wordlist")
-		{
-			wordlists.GET("/", showWordlist)
-			wordlists.GET("/reindex", reindexWordlist)
+			manage.GET("/job/:job_id", ListJobById)
+			manage.GET("/job/:job_id/cancel", CancelJobById)
+			manage.GET("/job", ListJobs)
+			manage.POST("/job/create", CreateNewJob)
+
+			manage.GET("/wordlist", ListWordlists)
+			manage.POST("/wordlist/upload", UploadWordlist)
+			manage.GET("/wordlist/reindex", ReindexWordlists)
 		}
 
-		client := v1.Group("/register")
+		jobs := v1.Group("/runner")
 		{
-			client.POST("/seat", setSeat) // register client seat for jobs
+			jobs.POST("/runner", RegisterRunner) // register client seat for jobs
+			jobs.GET("/:job_id/get/:number", GetJobChunk)
+			jobs.POST("/poll", GetJob)
 		}
+
 	}
 	return v1
 }
 
-func setSeat(context *gin.Context) {
+func UploadWordlist(context *gin.Context) {
+
+}
+
+func CancelJobById(context *gin.Context) {
+	// TODO:
+}
+
+func GetJob(context *gin.Context) {
+
+}
+
+func RegisterRunner(context *gin.Context) {
 	// register
 }
 
-func reindexWordlist(context *gin.Context) {
+func ReindexWordlists(context *gin.Context) {
 	Wordlists = dwt.ListWordlists(flagWordlistPath)
 	context.JSON(200, gin.H{
 		"status": "OK",
@@ -53,7 +67,7 @@ type ResponseWordlist struct {
 	Count int    `json:"count"`
 }
 
-func showWordlist(context *gin.Context) {
+func ListWordlists(context *gin.Context) {
 	var wl []ResponseWordlist
 	for i, w := range Wordlists {
 		wl = append(wl, ResponseWordlist{
@@ -69,7 +83,7 @@ func showWordlist(context *gin.Context) {
 	})
 }
 
-func getJobChunk(context *gin.Context) {
+func GetJobChunk(context *gin.Context) {
 	var number uint32
 	id := context.Param("job_id")
 
@@ -105,7 +119,7 @@ func getJobChunk(context *gin.Context) {
 	})
 }
 
-func showJobById(context *gin.Context) {
+func ListJobById(context *gin.Context) {
 	id := context.Param("job_id")
 	uid, err := uuid.FromString(id)
 	if err != nil {
@@ -130,7 +144,7 @@ type NewJsonJob struct {
 	WordlistIds []int `json:"ids"`
 }
 
-func createNewJob(context *gin.Context) {
+func CreateNewJob(context *gin.Context) {
 	job := new(NewJsonJob)
 	if err := context.BindJSON(&job); err != nil {
 		fmt.Println(err)
@@ -173,7 +187,7 @@ func createNewJob(context *gin.Context) {
 	})
 }
 
-func showRunningJobs(context *gin.Context) {
+func ListJobs(context *gin.Context) {
 	context.JSON(200, gin.H{
 		"status": "OK",
 		"code":   200,
