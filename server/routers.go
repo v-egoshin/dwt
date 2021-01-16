@@ -42,7 +42,17 @@ func UploadWordlist(context *gin.Context) {
 }
 
 func CancelJobById(context *gin.Context) {
-	// TODO:
+	cjob, notfound := FindJobByUID(context)
+	if notfound {
+		return
+	}
+
+	cjob.Delete()
+
+	context.JSON(200, gin.H{
+		"status": "OK",
+		"code":   200,
+	})
 }
 
 func GetJob(context *gin.Context) {
@@ -85,8 +95,6 @@ func ListWordlists(context *gin.Context) {
 
 func GetJobChunk(context *gin.Context) {
 	var number uint32
-	id := context.Param("job_id")
-
 	if cnum, err := strconv.Atoi(context.Param("number")); err == nil {
 		number = uint32(cnum)
 	} else {
@@ -97,13 +105,28 @@ func GetJobChunk(context *gin.Context) {
 		return
 	}
 
+	cjob, notfound := FindJobByUID(context)
+	if notfound {
+		return
+	}
+
+	context.JSON(200, gin.H{
+		"status": "Ok",
+		"data":   cjob.Get(number),
+	})
+}
+
+func FindJobByUID(context *gin.Context) (*Job, bool) {
+
+	id := context.Param("job_id")
+
 	uid, err := uuid.FromString(id)
 	if err != nil {
 		context.JSON(404, gin.H{
 			"status": "Error",
 			"error":  fmt.Sprintf("Job %s not found", id),
 		})
-		return
+		return nil, true
 	}
 
 	cjob := new(Job)
@@ -112,11 +135,7 @@ func GetJobChunk(context *gin.Context) {
 			cjob = j
 		}
 	}
-
-	context.JSON(200, gin.H{
-		"status": "Ok",
-		"data":   cjob.Get(number),
-	})
+	return cjob, false
 }
 
 func ListJobById(context *gin.Context) {

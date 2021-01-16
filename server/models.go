@@ -5,6 +5,7 @@ package server
 // Jobs
 
 import (
+	"sync"
 	"time"
 
 	"github.com/satori/go.uuid"
@@ -39,6 +40,7 @@ func NewAuthenticate() *Authenticate {
 
 type Job struct {
 	gorm.Model
+	mutex       sync.Mutex
 	ID          uuid.UUID
 	Description string
 	Position    uint32
@@ -92,4 +94,17 @@ func (j *Job) Get(i uint32) [][]string {
 	}
 
 	return collect
+}
+
+func (oj *Job) Delete() {
+	oj.mutex.Lock()
+	var newJobs []*Job
+	for _, j := range Jobs {
+		if j.ID != oj.ID {
+			newJobs = append(newJobs, j)
+		}
+	}
+	Jobs = newJobs
+	oj.mutex.Unlock()
+	oj = nil
 }
